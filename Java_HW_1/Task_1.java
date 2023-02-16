@@ -10,4 +10,8 @@ public class Task_1 {
         iScanner.close();
     }
 
+    public static int triangle_num(int n) {
+        int tn = (n*(n+1))/2;
+        return tn;    
+    }
 }
