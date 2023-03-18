@@ -4,41 +4,33 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class Wave {
+public class wave {
     public static void main(String[] args) {
-        Map myMap = new Map();
+        map myMap = new map();
         myMap.generateStartMap();
-        System.out.println(new MapPrinter().mapToString(myMap.getMap()));
+        System.out.println(new mapPrinter().mapToString(myMap.getMap()));
 
-        var waveAlgorithm = new WaveAlgorithm(myMap.getMap());
-        var startPoint = new Point2D(3, 4);
+        var waveAlgorithm = new waveAlgorithm(myMap.getMap());
+        var startPoint = new point2D(1, 1);
         waveAlgorithm.fillMap(startPoint);
 
-        System.out.println(new MapPrinter().mapToString(myMap.getMap()));
+        System.out.println(new mapPrinter().mapToString(myMap.getMap()));
 
-        var finishPoint = new Point2D(8, 4);
+        var finishPoint = new point2D(8, 4);
         var road = waveAlgorithm.getRoad(finishPoint, startPoint, myMap.getMap());
 
-        for (Point2D coordinate : road) {
+        for (point2D coordinate : road) {
             System.out.println(coordinate);
         }
     }
 }
 
-class Point2D {
+class point2D {
     int x, y;
 
-    public Point2D(int x, int y) {
+    public point2D(int x, int y) {
         this.x = x;
         this.y = y;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
     }
 
     @Override
@@ -47,11 +39,12 @@ class Point2D {
     }
 }
 
-class Map {
+class map {
     int[][] map;
 
     public void generateStartMap() {
-        int[][] map = {
+
+        this.map = new int[][]{
                 { -1, -1, -1, -1, -1, -1, -1, -1, -1 },
                 { -1, 00, 00, 00, 00, 00, 00, 00, -1 },
                 { -1, 00, 00, 00, 00, 00, 00, 00, -1 },
@@ -68,31 +61,21 @@ class Map {
                 { -1, 00, 00, 00, 00, 00, 00, 00, -1 },
                 { -1, -1, -1, -1, -1, -1, -1, -1, -1 }
         };
-
-        this.map = map;
     }
 
     public int[][] getMap() {
         return map;
     }
 
-    public void StartPos(Point2D pos) {
-        map[pos.x][pos.y] = -2;
-    }
-
-    public void ExitPos(Point2D pos) {
-        map[pos.x][pos.y] = -3;
-    }
-
 }
 
-class MapPrinter {
+class mapPrinter {
     public String mapToString(int[][] map) {
         StringBuilder sb = new StringBuilder();
 
-        for (int row = 0; row < map.length; row++) {
-            for (int col = 0; col < map[row].length; col++) {
-                sb.append(String.format("%3d", map[row][col]));
+        for (int[] ints : map) {
+            for (int anInt : ints) {
+                sb.append(String.format("%3d", anInt));
             }
             sb.append("\n");
         }
@@ -101,68 +84,67 @@ class MapPrinter {
     }
 }
 
-class WaveAlgorithm {
+class waveAlgorithm {
     int[][] map;
 
-    public WaveAlgorithm(int[][] map) {
+    public waveAlgorithm(int[][] map) {
         this.map = map;
     }
 
-    public void fillMap(Point2D startPoint) {
-        Queue<Point2D> queue = new LinkedList<Point2D>();
+    public void fillMap(point2D startPoint) {
+        Queue<point2D> queue = new LinkedList<>();
         queue.add(startPoint);
         map[startPoint.x][startPoint.y] = 1;
 
         while (queue.size() != 0) {
-            Point2D p = queue.remove();
+            point2D p = queue.remove();
 
             if (map[p.x - 1][p.y] == 0) {
-                queue.add(new Point2D(p.x - 1, p.y));
+                queue.add(new point2D(p.x - 1, p.y));
                 map[p.x - 1][p.y] = map[p.x][p.y] + 1;
             }
             if (map[p.x][p.y - 1] == 0) {
-                queue.add(new Point2D(p.x, p.y - 1));
+                queue.add(new point2D(p.x, p.y - 1));
                 map[p.x][p.y - 1] = map[p.x][p.y] + 1;
             }
             if (map[p.x + 1][p.y] == 0) {
-                queue.add(new Point2D(p.x + 1, p.y));
+                queue.add(new point2D(p.x + 1, p.y));
                 map[p.x + 1][p.y] = map[p.x][p.y] + 1;
             }
             if (map[p.x][p.y + 1] == 0) {
-                queue.add(new Point2D(p.x, p.y + 1));
+                queue.add(new point2D(p.x, p.y + 1));
                 map[p.x][p.y + 1] = map[p.x][p.y] + 1;
             }
         }
     }
 
-    public ArrayList<Point2D> getRoad(Point2D exit, Point2D start, int[][] map) {
-        ArrayList<Point2D> road = new ArrayList<>();
+    public ArrayList<point2D> getRoad(point2D exit, point2D start, int[][] map) {
+        ArrayList<point2D> road = new ArrayList<>();
         if (map[exit.x][exit.y] != 0 && map[exit.x][exit.y]!=-1) {
-            Point2D current_position = exit;
-            road.add(new Point2D(current_position.x, current_position.y));
+            road.add(new point2D(exit.x, exit.y));
 
             System.out.println("There is definitely a path");
 
-            while (map[current_position.x][current_position.y] != map[start.x][start.y]) {
+            while (map[exit.x][exit.y] != map[start.x][start.y]) {
 
-                if (map[current_position.x - 1][current_position.y] == map[current_position.x][current_position.y] - 1) {
-                    current_position.x = current_position.x - 1;
-                    road.add(new Point2D(current_position.x, current_position.y));
+                if (map[exit.x - 1][exit.y] == map[exit.x][exit.y] - 1) {
+                    exit.x = exit.x - 1;
+                    road.add(new point2D(exit.x, exit.y));
                 }
 
-                else if (map[current_position.x][current_position.y - 1] == map[current_position.x][current_position.y] - 1) {
-                    current_position.y = current_position.y - 1;
-                    road.add(new Point2D(current_position.x, current_position.y));
+                else if (map[exit.x][exit.y - 1] == map[exit.x][exit.y] - 1) {
+                    exit.y = exit.y - 1;
+                    road.add(new point2D(exit.x, exit.y));
                 }
 
-                else if (map[current_position.x + 1][current_position.y] == map[current_position.x][current_position.y] - 1) {
-                    current_position.x = current_position.x + 1;
-                    road.add(new Point2D(current_position.x, current_position.y));
+                else if (map[exit.x + 1][exit.y] == map[exit.x][exit.y] - 1) {
+                    exit.x = exit.x + 1;
+                    road.add(new point2D(exit.x, exit.y));
                 }
 
-                else if (map[current_position.x][current_position.y + 1] == map[current_position.x][current_position.y] - 1) {
-                    current_position.y = current_position.y + 1;
-                    road.add(new Point2D(current_position.x, current_position.y));
+                else if (map[exit.x][exit.y + 1] == map[exit.x][exit.y] - 1) {
+                    exit.y = exit.y + 1;
+                    road.add(new point2D(exit.x, exit.y));
                 }
             }
 
